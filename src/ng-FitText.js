@@ -33,22 +33,52 @@
           element[0].style.display = 'inline-block';
           element[0].style.lineHeight = '1';
 
-          var parent = element.parent();
-          var compressor = attrs.fittext || 1;
-          var loadDelay = attrs.fittextLoadDelay || config.loadDelay;
-          var nl = element[0].querySelectorAll('[fittext-nl],[data-fittext-nl]').length || 1;
-          var minFontSize = attrs.fittextMin || config.min || Number.NEGATIVE_INFINITY;
-          var maxFontSize = attrs.fittextMax || config.max || Number.POSITIVE_INFINITY;
+          var loadDelay    = attrs.fittextLoadDelay || config.loadDelay;
+          var minFontSize  = parseFloat(attrs.fittextMin || config.min || Number.NEGATIVE_INFINITY);
+          var maxFontSize  = parseFloat(attrs.fittextMax || config.max || Number.POSITIVE_INFINITY);
+          var testFontSize = 10;
+
+          var sortFn = function(first, last) {
+            return first > last;
+          };
+
+          // Returns the number if is between the min and max, otherwise
+          //  returns the min if the number is smaller than the min, or
+          //  max if the number is greater than the max
+          //
+          // @param [Float] min the min to compare with the number
+          // @param [Float] max the max to compare with the number
+          // @param [Float] number the number to compare between the
+          //  min and max.
+          //
+          // @return [Float]
+          var numberInBounds = function(min, max, number) {
+            var elements = [min, max, number].sort(sortFn);
+
+            // Returns the second element of the array, when the collection is
+            //  sort if the number is smaller than the min then the second
+            //  element will be the min, if is greater then the second element
+            //  will be the max, otherwise will be the number.
+            return elements[1];
+          };
+
+          var calculateOptimalFontSize = function(target, targetParent, fontSize) {
+            target.css('fontSize', fontSize);
+
+            var elementWidth = target.width(),
+                 parentWidth = targetParent.width();
+
+            // widths are retrieved as integers so the precision could be removed, subtract 1px to
+            // avoid precision issues.
+            return numberInBounds(minFontSize, maxFontSize, (parentWidth * fontSize / elementWidth) - 1);
+          };
 
           var resizer = function() {
-            element[0].style.fontSize = '10px';
-            var ratio = element[0].offsetHeight / element[0].offsetWidth / nl;
-            element[0].style.fontSize = Math.max(
-              Math.min((parent[0].offsetWidth - 6) * ratio * compressor,
-                parseFloat(maxFontSize)
-              ),
-              parseFloat(minFontSize)
-            ) + 'px';
+            var parent = element.parent();
+
+            var optimalFontSize = calculateOptimalFontSize(element, parent, testFontSize);
+
+            element.css('fontSize', optimalFontSize);
           };
 
           $timeout( function() { resizer() }, loadDelay);
