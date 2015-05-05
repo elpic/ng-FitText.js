@@ -39,7 +39,13 @@
           var testFontSize = 10;
 
           var sortFn = function(first, last) {
-            return first > last;
+            if (first > last){
+              return 1;
+            } else if (last > first) {
+              return -1;
+            } else {
+              return 0;
+            }
           };
 
           // Returns the number if is between the min and max, otherwise
