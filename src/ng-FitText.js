@@ -74,9 +74,6 @@
             var elementWidth = $(target).width();
             var parentWidth  = $(targetParent).width();
 
-            console.log(element, elementWidth, parentWidth, fontSize);
-            console.log((parentWidth * fontSize), (parentWidth * fontSize / elementWidth) - 5);
-
             // widths are retrieved as integers so the precision could be removed, subtract 1px to
             // avoid precision issues.
             return numberInBounds(minFontSize, maxFontSize, (parentWidth * fontSize / elementWidth) - 5);
