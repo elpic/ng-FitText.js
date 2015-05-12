@@ -30,7 +30,7 @@
         link: function(scope, element, attrs) {
           angular.extend(config, fitTextConfig.config);
 
-          element[0].style.display = 'block';
+          element[0].style.display = 'inline-block';
           element[0].style.lineHeight = '1';
 
           var loadDelay    = attrs.fittextLoadDelay || config.loadDelay;
@@ -71,12 +71,15 @@
           var calculateOptimalFontSize = function(target, targetParent, fontSize) {
             target.css('fontSize', fontSize);
 
-            var elementWidth = target.width(),
-                 parentWidth = targetParent.width();
+            var elementWidth = $(target).width();
+            var parentWidth  = $(targetParent).width();
+
+            console.log(element, elementWidth, parentWidth, fontSize);
+            console.log((parentWidth * fontSize), (parentWidth * fontSize / elementWidth) - 5);
 
             // widths are retrieved as integers so the precision could be removed, subtract 1px to
             // avoid precision issues.
-            return numberInBounds(minFontSize, maxFontSize, (parentWidth * fontSize / elementWidth) - 1);
+            return numberInBounds(minFontSize, maxFontSize, (parentWidth * fontSize / elementWidth) - 5);
           };
 
           var resizer = function() {
@@ -87,7 +90,7 @@
             element.css('fontSize', optimalFontSize);
           };
 
-          $timeout( function() { resizer() }, loadDelay);
+          $timeout(function() { resizer() }, loadDelay);
 
           scope.$watch(attrs.ngModel, function() { resizer() });
 
