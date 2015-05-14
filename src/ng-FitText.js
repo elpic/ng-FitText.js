@@ -30,7 +30,7 @@
         link: function(scope, element, attrs) {
           angular.extend(config, fitTextConfig.config);
 
-          element[0].style.display = 'inline';
+          element[0].style.display = 'inline-block';
           element[0].style.lineHeight = '1';
 
           var loadDelay    = attrs.fittextLoadDelay || config.loadDelay;
