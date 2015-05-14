@@ -30,7 +30,7 @@
         link: function(scope, element, attrs) {
           angular.extend(config, fitTextConfig.config);
 
-          element[0].style.display = 'inline-block';
+          element[0].style.display = 'inline';
           element[0].style.lineHeight = '1';
 
           var loadDelay    = attrs.fittextLoadDelay || config.loadDelay;
@@ -69,7 +69,7 @@
           };
 
           var calculateOptimalFontSize = function(target, targetParent, fontSize) {
-            target.css('fontSize', fontSize);
+            target.css('fontSize', fontSize + 'px');
 
             var elementWidth = $(target).width();
             var parentWidth  = $(targetParent).width();
@@ -89,7 +89,15 @@
 
           $timeout(function() { resizer() }, loadDelay);
 
-          scope.$watch(attrs.ngModel, function() { resizer() });
+          var contentChange = function(newValue) {
+            if (newValue) {
+              resizer();
+            }
+          };
+
+          scope.$watch(attrs.ngModel,    contentChange);
+          scope.$watch(attrs.ngBind,     contentChange);
+          scope.$watch(attrs.ngBindHtml, contentChange);
 
           config.debounce
             ? angular.element(window).bind('resize', config.debounce(function(){ scope.$apply(resizer)}, config.delay))
